@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pencairan Berhasil</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;font-family:Arial}body{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center}
+.check{width:80px;height:80px;background:#1CC812;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:40px;margin-bottom:16px}
+h2{font-size:20px;font-weight:800} p{font-size:13px;color:#777;margin-top:8px;line-height:1.5;max-width:300px}
+.btn{margin-top:20px;background:#11C7C8;color:#fff;border:none;padding:14px 28px;border-radius:30px;font-weight:800}
+</style></head>
+<body>
+<div class="check">✓</div>
+<h2>Dana Sedang Diproses</h2>
+<p>Permintaan pencairan <b id="jml">-</b> ke <b id="bank">-</b> sedang diproses. Estimasi 5-10 menit masuk ke rekening Anda. Mohon tunggu konfirmasi via WhatsApp.</p>
+<button class="btn" onclick="location.href='index.html'">Kembali ke Beranda</button>
+<script>
+document.getElementById('jml').innerText=new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(localStorage.getItem('final_cair')||5000000);
+document.getElementById('bank').innerText=(localStorage.getItem('rek_bank')||'rekening')+' '+ (localStorage.getItem('rek_norek')||'');
+</script>
+</body></html>

